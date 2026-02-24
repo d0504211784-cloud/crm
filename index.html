@@ -2,132 +2,160 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>CRM ענן - פתרון חיבור</title>
+    <title>CRM משכנתאות - חיבור ענן סופי</title>
+    <!-- טעינת Firebase בגרסת ה-Bundle הכי יציבה שיש -->
+    <script src="https://www.gstatic.com"></script>
+    <script src="https://www.gstatic.com"></script>
+    
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
         .hidden { display: none !important; }
-        .status-msg { padding: 15px; margin-bottom: 20px; border-radius: 10px; font-weight: bold; }
-        .error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-        .customer-card { background: #fff; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; cursor: pointer; }
-        button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .add-btn { background: #007bff; color: white; }
-        .save-btn { background: #28a745; color: white; width: 100%; margin-top: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center; }
+        .stat-container { display: flex; gap: 15px; margin-bottom: 25px; }
+        .stat-box { flex: 1; padding: 20px; border-radius: 15px; color: white; text-align: center; font-weight: bold; }
+        .stat-total { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .stat-approved { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .customer-card { background: white; margin-bottom: 12px; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 6px solid #ccc; cursor: pointer; }
+        .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 12px; }
+        .dot-approved { background: #28a745; box-shadow: 0 0 8px #28a745; }
+        .dot-process { background: #ffc107; box-shadow: 0 0 8px #ffc107; }
+        .dot-none { background: #bbb; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .add-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .save-btn { background: #28a745; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
+        .back-btn { background: #444; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
     </style>
-
-    <!-- טעינת Firebase דרך CDN חלופי ויציב -->
-    <script src="https://cdnjs.cloudflare.com"></script>
-    <script src="https://cdnjs.cloudflare.com"></script>
 </head>
 <body>
 
-<div id="homePage" class="container">
-    <div id="connectionStatus" class="status-msg error">מנסה להתחבר לענן של גוגל...</div>
-    
-    <div id="mainContent" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>ניהול לקוחות</h1>
-            <button class="add-btn" onclick="addNewCustomer()">+ לקוח חדש</button>
-        </div>
-        <div id="customerList"></div>
+<div id="loadingPage" class="container">
+    <h2 id="loadMsg">מתחבר לענן של גוגל...</h2>
+    <div id="retryArea" class="hidden">
+        <p>החיבור לוקח זמן מהרגיל. וודא שחיבור האינטרנט תקין.</p>
+        <button onclick="location.reload()" class="add-btn">נסה שוב</button>
     </div>
 </div>
 
-<div id="customerPage" class="container hidden">
-    <button onclick="showPage('homePage')" style="background:#444; color:white; margin-bottom:15px;">→ חזרה</button>
+<div id="homePage" class="container hidden">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>ניהול לקוחות</h1>
+        <button class="add-btn" onclick="addNewCustomer()">+ לקוח חדש</button>
+    </div>
+    <div class="stat-container">
+        <div class="stat-box stat-total"><div>סה"כ לקוחות</div><div id="stat-total">0</div></div>
+        <div class="stat-box stat-approved"><div>תיקים מאושרים</div><div id="stat-approved">0</div></div>
+    </div>
+    <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="חיפוש לפי שם...">
+    <div id="customerList"></div>
+</div>
+
+<div id="customerDetails" class="container hidden">
+    <button class="back-btn" onclick="showPage('homePage')">→ חזרה</button>
     <h2 id="custTitle"></h2>
-    <input type="tel" id="custPhone" placeholder="טלפון" style="width:100%; padding:10px; margin-bottom:10px;">
-    <textarea id="custNotes" placeholder="הערות..." style="width:100%; height:100px; padding:10px;"></textarea>
-    <button class="save-btn" onclick="saveData()">שמור שינויים לענן</button>
+    <input type="tel" id="phone" placeholder="מספר טלפון">
+    <textarea id="notes" rows="5" placeholder="הערות ועדכונים..."></textarea>
+    <button class="save-btn" onclick="saveToCloud()">שמור שינויים לענן</button>
 </div>
 
 <script>
-    const firebaseConfig = {
+    const config = {
         apiKey: "AIzaSyDA7AKVgoqUQ04QBlO6XM0ZwkaaEDYdU0Y",
         authDomain: "crm-start.firebaseapp.com",
         databaseURL: "https://crm-start-default-rtdb.firebaseio.com",
         projectId: "crm-start"
     };
 
-    var db, allData = {}, currentCustomer = "";
+    var db, allData = {}, currentCust = "";
 
-    // פונקציית אתחול שממתינה לספריות
-    function startApp() {
-        const statusDiv = document.getElementById('connectionStatus');
-        
+    // פונקציית התחברות חכמה
+    function connect() {
         if (typeof firebase !== 'undefined') {
             try {
-                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                if (!firebase.apps.length) firebase.initializeApp(config);
                 db = firebase.database();
                 
-                statusDiv.innerText = "✅ מחובר לענן בהצלחה!";
-                statusDiv.className = "status-msg success";
-                document.getElementById('mainContent').classList.remove('hidden');
-
-                // סנכרון נתונים
-                db.ref('customers').on('value', (snapshot) => {
-                    allData = snapshot.val() || {};
+                // האזנה לנתונים
+                db.ref('customers').on('value', (snap) => {
+                    allData = snap.val() || {};
                     renderList();
+                    showPage('homePage');
                 });
             } catch (e) {
-                statusDiv.innerText = "שגיאה בחיבור: " + e.message;
+                document.getElementById('loadMsg').innerText = "שגיאה: " + e.message;
             }
         } else {
-            // ניסיון חוזר בעוד שנייה אם האינטרנט איטי
-            setTimeout(startApp, 1000);
+            // אם לא נטען תוך 3 שניות, נציג כפתור נסה שוב
+            setTimeout(() => {
+                if (typeof firebase === 'undefined') {
+                    document.getElementById('loadMsg').innerText = "הדפדפן חוסם את החיבור.";
+                    document.getElementById('retryArea').classList.remove('hidden');
+                } else {
+                    connect();
+                }
+            }, 3000);
         }
     }
 
     function renderList() {
         const list = document.getElementById('customerList');
         list.innerHTML = '';
-        Object.keys(allData).sort().forEach(name => {
-            list.innerHTML += `
-                <div class="customer-card" onclick="openCustomer('${name}')">
-                    <span><strong>${name}</strong></span>
-                    <button onclick="event.stopPropagation(); deleteCustomer('${name}')">🗑️</button>
-                </div>`;
+        const names = Object.keys(allData).sort();
+        let approved = 0;
+
+        names.forEach(name => {
+            let div = document.createElement('div');
+            div.className = 'customer-card';
+            div.innerHTML = `<span><strong>${name}</strong></span><button onclick="event.stopPropagation(); deleteCust('${name}')">🗑️</button>`;
+            div.onclick = () => openCust(name);
+            list.appendChild(div);
         });
+
+        document.getElementById('stat-total').innerText = names.length;
     }
 
     function addNewCustomer() {
-        let name = prompt("שם לקוח חדש:");
-        if (name && !allData[name]) {
-            db.ref('customers/' + name).set({ name: name, created: Date.now() });
+        let n = prompt("שם לקוח:");
+        if (n && !allData) {
+            db.ref('customers/' + n).set({ name: n, created: Date.now() });
         }
     }
 
-    function openCustomer(name) {
-        currentCustomer = name;
-        document.getElementById('custTitle').innerText = name;
-        document.getElementById('custPhone').value = allData[name].phone || "";
-        document.getElementById('custNotes').value = allData[name].notes || "";
-        showPage('customerPage');
+    function openCust(n) {
+        currentCust = n;
+        document.getElementById('custTitle').innerText = n;
+        document.getElementById('phone').value = allData.phone || "";
+        document.getElementById('notes').value = allData.notes || "";
+        showPage('customerDetails');
     }
 
-    function saveData() {
-        db.ref('customers/' + currentCustomer).update({
-            phone: document.getElementById('custPhone').value,
-            notes: document.getElementById('custNotes').value
+    function saveToCloud() {
+        db.ref('customers/' + currentCust).update({
+            phone: document.getElementById('phone').value,
+            notes: document.getElementById('notes').value
         }).then(() => {
-            alert("נשמר!");
+            alert("נשמר בהצלחה!");
             showPage('homePage');
         });
     }
 
-    function deleteCustomer(name) {
-        if (confirm("למחוק את " + name + "?")) db.ref('customers/' + name).remove();
+    function deleteCust(n) {
+        if (confirm("למחוק את " + n + "?")) db.ref('customers/' + n).remove();
     }
 
     function showPage(id) {
-        document.getElementById('homePage').classList.add('hidden');
-        document.getElementById('customerPage').classList.add('hidden');
+        document.querySelectorAll('body > .container').forEach(c => c.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
+    function filterNames() {
+        let v = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.customer-card').forEach(c => {
+            c.style.display = c.innerText.toLowerCase().includes(v) ? "flex" : "none";
+        });
+    }
+
     // הפעלה
-    startApp();
+    window.onload = connect;
 </script>
 </body>
 </html>
