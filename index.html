@@ -2,10 +2,11 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>CRM משכנתאות - חיבור ענן סופי</title>
-    <!-- טעינת Firebase בגרסת ה-Bundle הכי יציבה שיש -->
-    <script src="https://www.gstatic.com"></script>
-    <script src="https://www.gstatic.com"></script>
+    <title>CRM משכנתאות - חיבור עוקף חסימה</title>
+    
+    <!-- השורות המעודכנות שהוספתי כאן (Cloudflare במקום Google) -->
+    <script src="https://cdnjs.cloudflare.com"></script>
+    <script src="https://cdnjs.cloudflare.com"></script>
     
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
@@ -16,10 +17,6 @@
         .stat-total { background: linear-gradient(135deg, #4facfe, #00f2fe); }
         .stat-approved { background: linear-gradient(135deg, #43e97b, #38f9d7); }
         .customer-card { background: white; margin-bottom: 12px; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 6px solid #ccc; cursor: pointer; }
-        .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 12px; }
-        .dot-approved { background: #28a745; box-shadow: 0 0 8px #28a745; }
-        .dot-process { background: #ffc107; box-shadow: 0 0 8px #ffc107; }
-        .dot-none { background: #bbb; }
         input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .add-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .save-btn { background: #28a745; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
@@ -29,9 +26,9 @@
 <body>
 
 <div id="loadingPage" class="container">
-    <h2 id="loadMsg">מתחבר לענן של גוגל...</h2>
+    <h2 id="loadMsg">מתחבר למסד הנתונים בענן...</h2>
     <div id="retryArea" class="hidden">
-        <p>החיבור לוקח זמן מהרגיל. וודא שחיבור האינטרנט תקין.</p>
+        <p>החיבור נחסם ע"י הדפדפן או הרשת. נסה לכבות חוסמי פרסומות.</p>
         <button onclick="location.reload()" class="add-btn">נסה שוב</button>
     </div>
 </div>
@@ -43,9 +40,7 @@
     </div>
     <div class="stat-container">
         <div class="stat-box stat-total"><div>סה"כ לקוחות</div><div id="stat-total">0</div></div>
-        <div class="stat-box stat-approved"><div>תיקים מאושרים</div><div id="stat-approved">0</div></div>
     </div>
-    <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="חיפוש לפי שם...">
     <div id="customerList"></div>
 </div>
 
@@ -53,8 +48,8 @@
     <button class="back-btn" onclick="showPage('homePage')">→ חזרה</button>
     <h2 id="custTitle"></h2>
     <input type="tel" id="phone" placeholder="מספר טלפון">
-    <textarea id="notes" rows="5" placeholder="הערות ועדכונים..."></textarea>
-    <button class="save-btn" onclick="saveToCloud()">שמור שינויים לענן</button>
+    <textarea id="notes" rows="5" placeholder="הערות..."></textarea>
+    <button class="save-btn" onclick="saveToCloud()">שמור לענן</button>
 </div>
 
 <script>
@@ -67,32 +62,29 @@
 
     var db, allData = {}, currentCust = "";
 
-    // פונקציית התחברות חכמה
     function connect() {
         if (typeof firebase !== 'undefined') {
             try {
                 if (!firebase.apps.length) firebase.initializeApp(config);
                 db = firebase.database();
                 
-                // האזנה לנתונים
                 db.ref('customers').on('value', (snap) => {
                     allData = snap.val() || {};
                     renderList();
                     showPage('homePage');
                 });
             } catch (e) {
-                document.getElementById('loadMsg').innerText = "שגיאה: " + e.message;
+                document.getElementById('loadMsg').innerText = "שגיאת חיבור: " + e.message;
             }
         } else {
-            // אם לא נטען תוך 3 שניות, נציג כפתור נסה שוב
             setTimeout(() => {
                 if (typeof firebase === 'undefined') {
-                    document.getElementById('loadMsg').innerText = "הדפדפן חוסם את החיבור.";
+                    document.getElementById('loadMsg').innerText = "החיבור עדיין חסום.";
                     document.getElementById('retryArea').classList.remove('hidden');
                 } else {
                     connect();
                 }
-            }, 3000);
+            }, 2000);
         }
     }
 
@@ -100,8 +92,6 @@
         const list = document.getElementById('customerList');
         list.innerHTML = '';
         const names = Object.keys(allData).sort();
-        let approved = 0;
-
         names.forEach(name => {
             let div = document.createElement('div');
             div.className = 'customer-card';
@@ -109,15 +99,12 @@
             div.onclick = () => openCust(name);
             list.appendChild(div);
         });
-
         document.getElementById('stat-total').innerText = names.length;
     }
 
     function addNewCustomer() {
         let n = prompt("שם לקוח:");
-        if (n && !allData) {
-            db.ref('customers/' + n).set({ name: n, created: Date.now() });
-        }
+        if (n && !allData) db.ref('customers/' + n).set({ name: n, created: Date.now() });
     }
 
     function openCust(n) {
@@ -132,10 +119,7 @@
         db.ref('customers/' + currentCust).update({
             phone: document.getElementById('phone').value,
             notes: document.getElementById('notes').value
-        }).then(() => {
-            alert("נשמר בהצלחה!");
-            showPage('homePage');
-        });
+        }).then(() => { alert("נשמר!"); showPage('homePage'); });
     }
 
     function deleteCust(n) {
@@ -147,14 +131,6 @@
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function filterNames() {
-        let v = document.getElementById('searchInput').value.toLowerCase();
-        document.querySelectorAll('.customer-card').forEach(c => {
-            c.style.display = c.innerText.toLowerCase().includes(v) ? "flex" : "none";
-        });
-    }
-
-    // הפעלה
     window.onload = connect;
 </script>
 </body>
