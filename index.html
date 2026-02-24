@@ -2,136 +2,104 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>CRM משכנתאות - חיבור עוקף חסימה</title>
-    
-    <!-- השורות המעודכנות שהוספתי כאן (Cloudflare במקום Google) -->
-    <script src="https://cdnjs.cloudflare.com"></script>
-    <script src="https://cdnjs.cloudflare.com"></script>
+    <title>CRM משכנתאות - חיבור ענן תקין</title>
+    <!-- טעינת ספריות Firebase בשיטה הבטוחה ביותר -->
+    <script src="https://www.gstatic.com"></script>
+    <script src="https://www.gstatic.com"></script>
     
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; text-align: center; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
         .hidden { display: none !important; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center; }
-        .stat-container { display: flex; gap: 15px; margin-bottom: 25px; }
-        .stat-box { flex: 1; padding: 20px; border-radius: 15px; color: white; text-align: center; font-weight: bold; }
-        .stat-total { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .stat-approved { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-        .customer-card { background: white; margin-bottom: 12px; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 6px solid #ccc; cursor: pointer; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .add-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .save-btn { background: #28a745; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
-        .back-btn { background: #444; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
+        .status-msg { padding: 15px; margin-bottom: 20px; border-radius: 10px; font-weight: bold; }
+        .success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .customer-card { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; cursor: pointer; }
+        button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .add-btn { background: #007bff; color: white; }
     </style>
 </head>
 <body>
 
-<div id="loadingPage" class="container">
-    <h2 id="loadMsg">מתחבר למסד הנתונים בענן...</h2>
-    <div id="retryArea" class="hidden">
-        <p>החיבור נחסם ע"י הדפדפן או הרשת. נסה לכבות חוסמי פרסומות.</p>
-        <button onclick="location.reload()" class="add-btn">נסה שוב</button>
+<div id="homePage" class="container">
+    <div id="connectionStatus" class="status-msg error">מתחבר לענן של גוגל...</div>
+    
+    <div id="mainUI" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>ניהול לקוחות</h1>
+            <button class="add-btn" onclick="addNewCustomer()">+ לקוח חדש</button>
+        </div>
+        <div id="customerList"></div>
     </div>
-</div>
-
-<div id="homePage" class="container hidden">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>ניהול לקוחות</h1>
-        <button class="add-btn" onclick="addNewCustomer()">+ לקוח חדש</button>
-    </div>
-    <div class="stat-container">
-        <div class="stat-box stat-total"><div>סה"כ לקוחות</div><div id="stat-total">0</div></div>
-    </div>
-    <div id="customerList"></div>
-</div>
-
-<div id="customerDetails" class="container hidden">
-    <button class="back-btn" onclick="showPage('homePage')">→ חזרה</button>
-    <h2 id="custTitle"></h2>
-    <input type="tel" id="phone" placeholder="מספר טלפון">
-    <textarea id="notes" rows="5" placeholder="הערות..."></textarea>
-    <button class="save-btn" onclick="saveToCloud()">שמור לענן</button>
 </div>
 
 <script>
-    const config = {
+    // הגדרות מתוקנות - וודא שהן תואמות בדיוק למה שמופיע לך ב-Firebase Console
+    const firebaseConfig = {
         apiKey: "AIzaSyDA7AKVgoqUQ04QBlO6XM0ZwkaaEDYdU0Y",
         authDomain: "crm-start.firebaseapp.com",
-        databaseURL: "https://crm-start-default-rtdb.firebaseio.com",
+        databaseURL: "https://crm-start-default-rtdb.firebaseio.com", // זו הכתובת ששלחת לי קודם
         projectId: "crm-start"
     };
 
-    var db, allData = {}, currentCust = "";
+    var db, allData = {};
 
-    function connect() {
+    function startApp() {
         if (typeof firebase !== 'undefined') {
             try {
-                if (!firebase.apps.length) firebase.initializeApp(config);
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 db = firebase.database();
                 
-                db.ref('customers').on('value', (snap) => {
-                    allData = snap.val() || {};
+                // בדיקה אם החיבור עובד
+                db.ref('.info/connected').on('value', (snap) => {
+                    const statusDiv = document.getElementById('connectionStatus');
+                    if (snap.val() === true) {
+                        statusDiv.innerText = "✅ מחובר לענן בהצלחה!";
+                        statusDiv.className = "status-msg success";
+                        document.getElementById('mainUI').classList.remove('hidden');
+                    } else {
+                        statusDiv.innerText = "❌ אין חיבור לענן. וודא שביצעת Publish ל-Rules ב-Firebase.";
+                        statusDiv.className = "status-msg error";
+                    }
+                });
+
+                // האזנה ללקוחות
+                db.ref('customers').on('value', (snapshot) => {
+                    allData = snapshot.val() || {};
                     renderList();
-                    showPage('homePage');
                 });
             } catch (e) {
-                document.getElementById('loadMsg').innerText = "שגיאת חיבור: " + e.message;
+                console.error(e);
             }
         } else {
-            setTimeout(() => {
-                if (typeof firebase === 'undefined') {
-                    document.getElementById('loadMsg').innerText = "החיבור עדיין חסום.";
-                    document.getElementById('retryArea').classList.remove('hidden');
-                } else {
-                    connect();
-                }
-            }, 2000);
+            setTimeout(startApp, 1000); // ניסיון חוזר אם הספריות לא נטענו
         }
     }
 
     function renderList() {
         const list = document.getElementById('customerList');
         list.innerHTML = '';
-        const names = Object.keys(allData).sort();
-        names.forEach(name => {
-            let div = document.createElement('div');
-            div.className = 'customer-card';
-            div.innerHTML = `<span><strong>${name}</strong></span><button onclick="event.stopPropagation(); deleteCust('${name}')">🗑️</button>`;
-            div.onclick = () => openCust(name);
-            list.appendChild(div);
+        Object.keys(allData).sort().forEach(name => {
+            list.innerHTML += `
+                <div class="customer-card">
+                    <span><strong>${name}</strong></span>
+                    <button onclick="deleteCustomer('${name}')">🗑️</button>
+                </div>`;
         });
-        document.getElementById('stat-total').innerText = names.length;
     }
 
     function addNewCustomer() {
-        let n = prompt("שם לקוח:");
-        if (n && !allData) db.ref('customers/' + n).set({ name: n, created: Date.now() });
+        let name = prompt("שם לקוח חדש:");
+        if (name && !allData[name]) {
+            db.ref('customers/' + name).set({ name: name, created: Date.now() });
+        }
     }
 
-    function openCust(n) {
-        currentCust = n;
-        document.getElementById('custTitle').innerText = n;
-        document.getElementById('phone').value = allData.phone || "";
-        document.getElementById('notes').value = allData.notes || "";
-        showPage('customerDetails');
+    function deleteCustomer(name) {
+        if (confirm("למחוק?")) db.ref('customers/' + name).remove();
     }
 
-    function saveToCloud() {
-        db.ref('customers/' + currentCust).update({
-            phone: document.getElementById('phone').value,
-            notes: document.getElementById('notes').value
-        }).then(() => { alert("נשמר!"); showPage('homePage'); });
-    }
-
-    function deleteCust(n) {
-        if (confirm("למחוק את " + n + "?")) db.ref('customers/' + n).remove();
-    }
-
-    function showPage(id) {
-        document.querySelectorAll('body > .container').forEach(c => c.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    window.onload = connect;
+    window.onload = startApp;
 </script>
 </body>
 </html>
