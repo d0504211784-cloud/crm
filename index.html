@@ -2,25 +2,33 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>CRM משכנתאות - סנכרון ענן סופי</title>
+    <title>CRM משכנתאות - ענן</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
         .hidden { display: none !important; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        #homePage { background: linear-gradient(145deg, #f8fbff, #eef2f7); }
         .stat-container { display: flex; gap: 15px; margin-bottom: 25px; }
         .stat-box { flex: 1; padding: 20px; border-radius: 15px; color: white; text-align: center; font-weight: bold; }
         .stat-total { background: linear-gradient(135deg, #4facfe, #00f2fe); }
         .stat-approved { background: linear-gradient(135deg, #43e97b, #38f9d7); }
         .customer-card { background: white; margin-bottom: 12px; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-right: 6px solid #ccc; cursor: pointer; }
         .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 12px; }
-        .dot-approved { background: #28a745; } .dot-process { background: #ffc107; } .dot-none { background: #bbb; }
+        .dot-approved { background: #28a745; box-shadow: 0 0 8px #28a745; }
+        .dot-process { background: #ffc107; box-shadow: 0 0 8px #ffc107; }
+        .dot-none { background: #bbb; }
+        .grid-3 { display: flex; gap: 20px; margin-top: 20px; }
+        .column { flex: 1; padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; color: white; transition: 0.3s; }
+        .col-id { background: #007bff; } .col-status { background: #28a745; } .col-extra { background: #6f42c1; }
+        .bank-row { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 12px; }
+        .approved-bank { background-color: #e8f5e9 !important; border-color: #28a745 !important; }
         input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .save-btn { background: #28a745; color: white; padding: 15px; border: none; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
-        .add-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .add-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
         .back-btn { background: #444; color: white; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 15px; }
+        #idPreview { max-width: 100%; border-radius: 10px; }
     </style>
-
-    <!-- טעינת Firebase בצורה אמינה יותר -->
+    <!-- טעינת Firebase הרשמית -->
     <script src="https://www.gstatic.com"></script>
     <script src="https://www.gstatic.com"></script>
 </head>
@@ -35,25 +43,27 @@
         <div class="stat-box stat-total"><div>סה"כ לקוחות</div><div id="stat-total">0</div></div>
         <div class="stat-box stat-approved"><div>תיקים מאושרים</div><div id="stat-approved">0</div></div>
     </div>
-    <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="חיפוש לקוח לפי שם...">
+    <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="חיפוש לקוח...">
     <div id="customerList"></div>
 </div>
 
+<!-- מסכי משנה -->
 <div id="customerMenuPage" class="container hidden">
     <button class="back-btn" onclick="showPage('homePage')">→ חזרה</button>
     <h2 id="selectedNameTitle" style="text-align: center; color: #007bff;"></h2>
-    <div style="display:flex; gap:10px;">
-        <button onclick="showPage('idPage')" style="flex:1; padding:20px; background:#007bff; color:white; border-radius:10px; border:none; cursor:pointer;">מסמכים</button>
-        <button onclick="showPage('statusPage')" style="flex:1; padding:20px; background:#28a745; color:white; border-radius:10px; border:none; cursor:pointer;">בנקים</button>
-        <button onclick="showPage('extraPage')" style="flex:1; padding:20px; background:#6f42c1; color:white; border-radius:10px; border:none; cursor:pointer;">שונות</button>
+    <div class="grid-3">
+        <div class="column col-id" onclick="showPage('idPage')"><h2>מסמכים</h2></div>
+        <div class="column col-status" onclick="showPage('statusPage')"><h2>בנקים</h2></div>
+        <div class="column col-extra" onclick="showPage('extraPage')"><h2>שונות</h2></div>
     </div>
 </div>
 
-<!-- דפי התוכן (בקיצור לצורך הבדיקה) -->
 <div id="idPage" class="container hidden">
     <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
     <input type="tel" id="custPhone" placeholder="טלפון">
-    <button class="save-btn" onclick="saveAllData()">שמור לענן</button>
+    <input type="file" onchange="previewFile(this)">
+    <img id="idPreview" class="hidden">
+    <button class="save-btn" onclick="saveAllData()">שמור הכל לענן</button>
 </div>
 
 <div id="statusPage" class="container hidden">
@@ -65,14 +75,10 @@
 <div id="extraPage" class="container hidden">
     <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
     <textarea id="freeText" rows="4" placeholder="הערות..."></textarea>
-    <button class="save-btn" onclick="saveAllData()">שמור שונות</button>
+    <button class="save-btn" onclick="saveAllData()">שמור לענן</button>
 </div>
 
 <script>
-    var db;
-    var allData = {};
-    var currentCustomer = "";
-
     const firebaseConfig = {
         apiKey: "AIzaSyDA7AKVgoqUQ04QBlO6XM0ZwkaaEDYdU0Y",
         authDomain: "crm-start.firebaseapp.com",
@@ -80,26 +86,16 @@
         projectId: "crm-start"
     };
 
-    // פונקציית אתחול בטוחה
-    function initApp() {
-        if (typeof firebase !== 'undefined') {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-            
-            // האזנה לנתונים
-            db.ref('customers').on('value', (snapshot) => {
-                allData = snapshot.val() || {};
-                renderCustomerList();
-            });
-            console.log("Firebase Connected Successfully");
-        } else {
-            console.error("Firebase library not loaded");
-            alert("הדפדפן חוסם את החיבור לענן. נסה להשתמש בדפדפן אחר או לבדוק את חיבור האינטרנט.");
-        }
-    }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let allData = {};
+    let currentCustomer = "";
 
-    // הפעלה מיד כשהספריות זמינות
-    window.addEventListener('load', initApp);
+    // האזנה לענן
+    db.ref('customers').on('value', (snapshot) => {
+        allData = snapshot.val() || {};
+        renderCustomerList();
+    });
 
     function renderCustomerList() {
         const listDiv = document.getElementById('customerList');
@@ -110,16 +106,16 @@
         names.forEach(name => {
             const data = allData[name] || {};
             const bStatuses = Object.values(data.banks || {});
-            let dotClass = bStatuses.includes("אושר") ? "dot-approved" : (bStatuses.includes("בתהליך") ? "dot-process" : "dot-none");
-            if (dotClass === "dot-approved") approved++;
+            let dot = bStatuses.includes("אושר") ? "dot-approved" : (bStatuses.includes("בתהליך") ? "dot-process" : "dot-none");
+            if (dot === "dot-approved") approved++;
 
             listDiv.innerHTML += `
                 <div class="customer-card" onclick="openCustomer('${name}')">
                     <div style="display:flex; align-items:center;">
-                        <span class="status-dot ${dotClass}"></span>
+                        <span class="status-dot ${dot}"></span>
                         <strong>${name}</strong>
                     </div>
-                    <button onclick="event.stopPropagation(); deleteCustomer('${name}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
+                    <button onclick="event.stopPropagation(); deleteCustomer('${name}')">🗑️</button>
                 </div>`;
         });
         document.getElementById('stat-total').innerText = names.length;
@@ -128,10 +124,7 @@
 
     function addNewCustomer() {
         let name = prompt("שם לקוח חדש:");
-        if (name && !allData[name]) {
-            db.ref('customers/' + name).set({ name: name, created: Date.now() })
-              .catch(e => alert("שגיאה: וודא ששינית Rules ל-true ב-Firebase"));
-        }
+        if (name && !allData[name]) db.ref('customers/' + name).set({ name: name, created: Date.now() });
     }
 
     function openCustomer(name) {
@@ -148,6 +141,7 @@
         document.querySelectorAll('.container').forEach(d => d.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
         if (id === 'statusPage') loadBankList();
+        if (['idPage', 'statusPage', 'extraPage'].includes(id)) loadCustomerData();
     }
 
     function loadBankList() {
@@ -158,9 +152,9 @@
         banks.forEach(b => {
             let s = data.banks?.[b] || "לא התחיל";
             div.innerHTML += `
-                <div class="bank-row ${s === 'אושר' ? 'approved-bank' : ''}">
+                <div id="cont-${b}" class="bank-row ${s === 'אושר' ? 'approved-bank' : ''}">
                     <strong>${b}:</strong>
-                    <select id="bank-${b}">
+                    <select id="bank-${b}" onchange="toggleTracks('${b}')">
                         <option ${s==='לא התחיל'?'selected':''}>לא התחיל</option>
                         <option ${s==='בתהליך'?'selected':''}>בתהליך</option>
                         <option ${s==='אושר'?'selected':''}>אושר</option>
@@ -169,22 +163,44 @@
         });
     }
 
+    function toggleTracks(b) {
+        const s = document.getElementById('bank-' + b).value;
+        document.getElementById('cont-' + b).classList.toggle('approved-bank', s === "אושר");
+    }
+
+    function previewFile(input) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('idPreview').src = e.target.result;
+            document.getElementById('idPreview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function loadCustomerData() {
+        const data = allData[currentCustomer] || {};
+        if(document.getElementById('custPhone')) document.getElementById('custPhone').value = data.phone || "";
+        if(document.getElementById('freeText')) document.getElementById('freeText').value = data.freeText || "";
+        if(data.fileData) {
+            document.getElementById('idPreview').src = data.fileData;
+            document.getElementById('idPreview').classList.remove('hidden');
+        }
+    }
+
     function saveAllData() {
-        if (!db) return;
         let data = allData[currentCustomer] || {};
-        const phone = document.getElementById('custPhone').value;
-        const text = document.getElementById('freeText').value;
-        if(phone) data.phone = phone;
-        if(text) data.freeText = text;
+        if(document.getElementById('custPhone')) data.phone = document.getElementById('custPhone').value;
+        if(document.getElementById('freeText')) data.freeText = document.getElementById('freeText').value;
+        if(!document.getElementById('idPreview').classList.contains('hidden')) data.fileData = document.getElementById('idPreview').src;
 
         if (!document.getElementById('statusPage').classList.contains('hidden')) {
             data.banks = {};
-            const banks = ["בנק לאומי", "בנק הפועלים", "מזרחי טפחות", "בנק דיסקונט", "הבנק הבינלאומי", "חוץ בנקאי"];
-            banks.forEach(b => {
+            const banksList = ["בנק לאומי", "בנק הפועלים", "מזרחי טפחות", "בנק דיסקונט", "הבנק הבינלאומי", "חוץ בנקאי"];
+            banksList.forEach(b => {
                 data.banks[b] = document.getElementById('bank-' + b).value;
             });
         }
-        db.ref('customers/' + currentCustomer).update(data).then(() => alert("נשמר!"));
+        db.ref('customers/' + currentCustomer).update(data).then(() => alert("נשמר בענן!"));
     }
 
     function filterNames() {
