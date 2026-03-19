@@ -2,201 +2,203 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>CRM משכנתאות - Pro - Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM CRM - Mortgage Elite Pro V5</title>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         :root { 
             --primary: #4361ee; 
-            --bg: #f8f9fd; 
-            --todo-bg: #ffffff; 
-            --archive: #64748b;
-            --danger: #ef476f;
+            --bg: #f8fafc; 
+            --text: #1e293b;
             --success: #10b981;
+            --danger: #ef476f;
             --warning: #ff9f1c;
+            --border: #e2e8f0;
         }
         
-        body { font-family: 'Heebo', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #2b2d42; display: flex; gap: 25px; align-items: flex-start; }
+        body { font-family: 'Heebo', sans-serif; background: var(--bg); margin: 0; color: var(--text); display: flex; min-height: 100vh; }
         .hidden { display: none !important; }
-        .main-content { flex: 1; min-width: 0; }
 
-        .notification-bar { background: #fee2e2; border: 2px solid #ef476f; border-radius: 20px; padding: 15px 25px; margin-bottom: 20px; }
-        .notification-item { display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #b91c1c; margin-bottom: 5px; }
-
-        .quick-calc-card { background: linear-gradient(135deg, #1e293b, #334155); color: white; padding: 25px; border-radius: 25px; margin-bottom: 25px; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; }
-        .calc-input-group { flex: 1; min-width: 140px; }
-        .calc-input-group label { display: block; font-size: 13px; margin-bottom: 8px; opacity: 0.8; }
-        .calc-input-group input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 12px; width: 100%; border-radius: 12px; outline: none; }
-        .calc-result { background: var(--primary); padding: 15px 30px; border-radius: 18px; text-align: center; min-width: 150px; }
-
-        .container { background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); margin-bottom: 20px; }
-        .main-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-box { padding: 20px; border-radius: 24px; color: white; text-align: center; cursor: pointer; transition: 0.3s; }
-        .stat-total { background: linear-gradient(135deg, #4361ee, #4895ef); }
-        .stat-approved { background: linear-gradient(135deg, #2ec4b6, #80ffdb); color: #011627; }
-        .stat-followup { background: linear-gradient(135deg, #7209b7, #b5179e); } 
-        .stat-leads { background: linear-gradient(135deg, #ff9f1c, #ffbf69); color: #011627; }
-        .stat-archive { background: linear-gradient(135deg, #64748b, #94a3b8); }
-
-        .customer-card { margin-bottom: 15px; padding: 20px; border-radius: 22px; display: flex; align-items: center; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .customer-card.status-approved { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .customer-card.status-followup { background: linear-gradient(135deg, #4361ee, #3a0ca3); color: white; }
-        .customer-card.status-lead { background: linear-gradient(135deg, #ff9f1c, #ffbf69); color: #1e293b; }
-        .customer-card.archived { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; opacity: 0.8; }
+        /* Sidebar Navigation */
+        nav { width: 280px; background: white; border-left: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 10px; position: sticky; top: 0; height: 100vh; box-sizing: border-box; box-shadow: 2px 0 10px rgba(0,0,0,0.02); overflow-y: auto; }
+        .nav-logo { font-size: 26px; font-weight: 900; color: var(--primary); text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 10px; }
         
-        .avatar { width: 50px; height: 50px; border-radius: 15px; background: white; color: #1e293b; display: flex; align-items: center; justify-content: center; font-weight: 900; margin-left: 15px; }
-        .cust-info-main { flex: 2; }
-        .cust-name { font-weight: 900; font-size: 20px; display: block; }
-        .tag-pill { font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 50px; background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(0,0,0,0.05); margin-right: 5px; }
+        /* To-Do Sidebar (Top) */
+        .todo-sidebar { background: #f1f5f9; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .todo-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        .todo-item:last-child { border: none; }
 
-        .wa-btn { background: white !important; color: #25d366 !important; padding: 8px 15px; border-radius: 12px; text-decoration: none; font-size: 13px; font-weight: 700; }
-        .download-btn { background: #6366f1; color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-size: 12px; margin-left: 10px; }
+        .nav-item { padding: 12px 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: bold; border: none; background: none; text-align: right; width: 100%; color: var(--text); font-size: 16px; }
+        .nav-item:hover, .nav-item.active { background: #eff6ff; color: var(--primary); }
+
+        /* Quick Calculator Sidebar */
+        .calc-sidebar { background: #1e293b; color: white; padding: 18px; border-radius: 18px; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .calc-sidebar label { font-size: 11px; opacity: 0.8; display: block; margin-bottom: 4px; }
+        .calc-sidebar input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 10px; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; outline: none; }
+        .calc-res-box { background: var(--primary); padding: 10px; border-radius: 12px; text-align: center; }
+
+        /* Main Content */
+        main { flex: 1; padding: 40px; box-sizing: border-box; overflow-y: auto; }
+        .alert-reminder { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #fecaca; font-weight: bold; }
+        .alert-reminder span.clickable { text-decoration: underline; cursor: pointer; margin-right: 8px; transition: 0.2s; }
+        .alert-reminder span.clickable:hover { color: var(--danger); }
         
-        input, select, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; box-sizing: border-box; }
-        .save-btn { background: var(--success); color: white; padding: 20px; border: none; border-radius: 18px; width: 100%; cursor: pointer; font-size: 18px; font-weight: 800; margin-top: 40px; }
-        .back-btn { background:#f1f5f9; border:none; padding:12px 25px; border-radius:50px; cursor:pointer; margin-bottom:30px; font-weight:bold; color:#64748b; }
-        .bank-card { border: 1px solid #f1f5f9; padding: 20px; margin-bottom: 20px; border-radius: 20px; background: #f8fafc; color: #2b2d42; }
-        .track-item { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #fff; padding: 10px; border-radius: 12px; border: 1px solid #edf2f7; }
-        .track-item input, .track-item select { margin: 0; padding: 8px; font-size: 13px; }
-        .todo-section { width: 320px; background: #fff; padding: 25px; border-radius: 25px; border: 2px solid #f1f5f9; position: sticky; top: 20px; }
+        .glass-card { background: white; border-radius: 24px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); margin-bottom: 25px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 30px; }
+        .stat-box { padding: 18px; border-radius: 20px; text-align: center; cursor: pointer; color: white; transition: 0.3s; }
+        .stat-box:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+        /* Customer Cards */
+        .customer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .cust-card { background: white; border: 1px solid var(--border); border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; }
+        .cust-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 12px 20px rgba(0,0,0,0.05); }
+        .status-pill { font-size: 10px; padding: 4px 10px; border-radius: 50px; font-weight: bold; color: white; margin-bottom: 10px; display: inline-block; }
+
+        /* Form Components */
+        label { display: block; font-weight: bold; margin: 15px 0 5px; font-size: 14px; color: #64748b; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; outline: none; font-family: inherit; }
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        .btn-primary { background: var(--primary); color: white; }
         
-        .track-res-label { font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 2px; }
-        .track-res-val { font-weight: 900; font-size: 14px; color: #1e293b; }
+        .bank-item { background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .track-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 40px; gap: 8px; margin-top: 10px; align-items: center; }
     </style>
 </head>
-
 <body>
-    <div class="main-content">
-        <!-- מחשבון משכנתא מהיר -->
-        <div class="quick-calc-card">
-            <div style="width: 100%; margin-bottom: 10px; font-weight: 900; font-size: 18px;">🧮 מחשבון החזר מהיר (שפיצר)</div>
-            <div class="calc-input-group">
-                <label>סכום הלוואה (₪)</label>
-                <input type="number" id="calcAmt" placeholder="1,000,000" oninput="quickCalc()">
-            </div>
-            <div class="calc-input-group">
-                <label>ריבית שנתית (%)</label>
-                <input type="number" id="calcRate" step="0.1" placeholder="4.5" oninput="quickCalc()">
-            </div>
-            <div class="calc-input-group">
-                <label>תקופה (שנים)</label>
-                <input type="number" id="calcYears" placeholder="30" oninput="quickCalc()">
-            </div>
-            <div class="calc-result">
-                <div style="font-size: 12px; opacity: 0.9;">החזר חודשי משוער:</div>
-                <div id="monthlyResult" style="font-size: 24px; font-weight: 900;">₪ 0</div>
-            </div>
+    <nav>
+        <div class="nav-logo">DOM CRM</div>
+        
+        <div class="todo-sidebar">
+            <div style="font-weight:900; font-size:14px; margin-bottom:10px; color:var(--primary);">📌 משימות לביצוע</div>
+            <div id="todo-list"></div>
+            <input type="text" id="todo-input" placeholder="הוסף משימה..." onkeydown="if(event.key==='Enter') addTodo()" style="margin-top:10px; padding:8px; font-size:12px;">
         </div>
 
-        <div id="reminderBar" class="notification-bar hidden">
-            <div style="font-weight: 900; margin-bottom: 10px; font-size: 18px; color: #b91c1c;">🔔 תזכורות להיום:</div>
-            <div id="reminderList"></div>
+        <button id="btn-nav-dash" class="nav-item active" onclick="showSection('dash')">🏠 דאשבורד ניהולי</button>
+        <button id="btn-nav-list" class="nav-item" onclick="showSection('full-list')">👥 מאגר לקוחות מלא</button>
+        <button class="btn btn-primary" onclick="addNewCustomer()" style="margin-top: 10px;">+ לקוח חדש</button>
+        
+        <div class="calc-sidebar">
+            <div style="font-weight:900; margin-bottom:12px; color:var(--warning); text-align:center;">🧮 מחשבון החזר</div>
+            <label>סכום הלוואה (₪)</label><input type="number" id="side-amt" oninput="sideCalc()">
+            <label>ריבית שנתית (%)</label><input type="number" id="side-rate" step="0.1" oninput="sideCalc()">
+            <label>תקופה (שנים)</label><input type="number" id="side-years" oninput="sideCalc()">
+            <div class="calc-res-box"><div id="side-res" style="font-size:20px; font-weight:900;">₪ 0</div></div>
         </div>
 
-        <div id="homePage" class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px;">
-                <h1 style="margin:0; font-size: 36px; font-weight: 900; color: #1e293b;">CRM משכנתאות</h1>
-                <div style="display: flex; gap: 12px;">
-                    <button class="excel-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
-                    <button class="save-btn" style="margin:0; width:auto; padding:12px 30px;" onclick="addNewCustomer()">+ לקוח חדש</button>
+        <div style="margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding-top:15px;">
+            <button class="btn" style="background:#64748b; color:white; padding:8px; font-size:11px;" onclick="exportFullBackup()">💾 גיבוי</button>
+            <button class="btn" style="background:#94a3b8; color:white; padding:8px; font-size:11px;" onclick="document.getElementById('importFile').click()">📂 שחזור</button>
+            <input type="file" id="importFile" class="hidden" onchange="importFullBackup(event)">
+        </div>
+    </nav>
+
+    <main>
+        <!-- פס תזכורות דינמי עם קישורים לחיצים -->
+        <div id="reminder-alert" class="alert-reminder hidden"></div>
+
+        <!-- דאשבורד ניהולי -->
+        <section id="dash">
+            <h1 style="margin-bottom: 25px; font-weight: 900;">מרכז בקרה</h1>
+            <div class="stats-grid">
+                <div class="stat-box" style="background: var(--primary);" onclick="setFilter('all')"><div style="font-size: 28px; font-weight: 900;" id="stat-all">0</div><div style="font-size: 13px;">סה"כ פעילים</div></div>
+                <div class="stat-box" style="background: var(--success);" onclick="setFilter('approved')"><div style="font-size: 28px; font-weight: 900;" id="stat-app">0</div><div style="font-size: 13px;">מאושרים</div></div>
+                <div class="stat-box" style="background: var(--warning);" onclick="setFilter('process')"><div style="font-size: 28px; font-weight: 900;" id="stat-proc">0</div><div style="font-size: 13px;">בתהליך</div></div>
+                <div class="stat-box" style="background: #6366f1;" onclick="setFilter('lead')"><div style="font-size: 28px; font-weight: 900;" id="stat-lead">0</div><div style="font-size: 13px;">לידים חדשים</div></div>
+                <div class="stat-box" style="background: #94a3b8;" onclick="setFilter('archive')"><div style="font-size: 28px; font-weight: 900;" id="stat-arc">0</div><div style="font-size: 13px;">ארכיון</div></div>
+            </div>
+            <div class="glass-card" style="padding: 15px;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <select id="filter-agent" onchange="renderGrids()" style="width: 140px; margin:0;"><option value="all">כל הנציגים</option><option value="דורון">דורון</option><option value="יעקב">יעקב</option><option value="אביב">אביב</option></select>
+                    <input type="text" id="search-dash" placeholder="חיפוש לפי שם..." onkeyup="renderGrids()" style="flex:1; margin:0;">
                 </div>
             </div>
-            
-            <div class="main-stats-grid">
-                <div class="stat-box stat-total" onclick="setFilter('all')"><div>👤 פעילים</div><div id="stat-total">0</div></div>
-                <div class="stat-box stat-approved" onclick="setFilter('approved')"><div>🏆 מאושרים</div><div id="stat-approved">0</div></div>
-                <div class="stat-box stat-followup" onclick="setFilter('followup')"><div>📅 בטיפול</div><div id="stat-followup">0</div></div>
-                <div class="stat-box stat-leads" onclick="setFilter('leads')"><div>🔥 חדשים</div><div id="stat-leads">0</div></div>
-                <div class="stat-box stat-archive" onclick="setFilter('archive')"><div>📁 ארכיון</div><div id="stat-archive">0</div></div>
-            </div>
+            <div id="dash-grid" class="customer-grid"></div>
+        </section>
 
-            <div style="display: flex; gap: 10px; margin-bottom: 25px; align-items: center; justify-content: center; background: #f1f5f9; padding: 10px; border-radius: 50px;">
-                <button class="filter-btn active" onclick="setAgentFilter('all')" style="padding:8px 20px; border-radius:50px; border:none; cursor:pointer;">הכל</button>
-                <button class="filter-btn" onclick="setAgentFilter('דורון')" style="padding:8px 20px; border-radius:50px; border:none; cursor:pointer;">דורון</button>
-                <button class="filter-btn" onclick="setAgentFilter('יעקב')" style="padding:8px 20px; border-radius:50px; border:none; cursor:pointer;">יעקב</button>
-                <button class="filter-btn" onclick="setAgentFilter('אביב')" style="padding:8px 20px; border-radius:50px; border:none; cursor:pointer;">אביב</button>
-            </div>
-            
-            <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="חיפוש לקוח..." style="border-radius:50px; padding:18px 25px;">
-            <div id="customerList" style="margin-top:25px;"></div>
-        </div>
+        <!-- מאגר מלא -->
+        <section id="full-list" class="hidden">
+            <h1 style="margin-bottom: 25px; font-weight: 900;">מאגר לקוחות מלא</h1>
+            <div class="glass-card"><input type="text" id="search-full" placeholder="חיפוש חופשי במאגר..." onkeyup="renderGrids()"></div>
+            <div id="full-grid" class="customer-grid"></div>
+        </section>
 
-        <div id="customerMenuPage" class="container hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button class="back-btn" onclick="showPage('homePage')">→ חזרה</button>
-                <button id="archiveBtn" onclick="toggleArchiveStatus()" style="background:#64748b; color:white; border:none; padding:10px 20px; border-radius:15px; cursor:pointer; font-weight:bold;"></button>
-            </div>
-            <h2 id="selectedNameTitle" style="text-align: center; font-size: 34px; font-weight:900; color: #1e293b; margin-bottom: 40px;"></h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div onclick="showPage('idPage')" style="background: linear-gradient(135deg, #4361ee, #4cc9f0); padding: 45px; border-radius: 30px; color: white; text-align: center; cursor: pointer;">📄 <h2>מסמכים</h2></div>
-                <div onclick="showPage('statusPage')" style="background: linear-gradient(135deg, #2ec4b6, #80ffdb); padding: 45px; border-radius: 30px; color: #011627; text-align: center; cursor: pointer;">🏦 <h2>בנקים</h2></div>
-                <div onclick="showPage('extraPage')" style="background: linear-gradient(135deg, #7209b7, #f72585); padding: 45px; border-radius: 30px; color: white; text-align: center; cursor: pointer;">⚙️ <h2>שונות</h2></div>
-                <div onclick="showPage('checklistPage')" style="background: linear-gradient(135deg, #ff9f1c, #ffbf69); padding: 45px; border-radius: 30px; color: #011627; text-align: center; cursor: pointer;">✅ <h2>צ'ק ליסט</h2></div>
-            </div>
-        </div>
-
-        <div id="idPage" class="container hidden">
-            <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
-            <h2>📄 מסמכי זיהוי ופרטים</h2>
-            <label>טלפון לקוח:</label><input type="tel" id="custPhone">
-            <label>נשוי/אה?</label><select id="hasSpouse" onchange="toggleSpouseFields()"><option value="no">לא</option><option value="yes">כן</option></select>
-            <div id="spouseFields" class="hidden">
-                <label>שם בן זוג:</label><input type="text" id="spouseName">
-                <label>טלפון בן זוג:</label><input type="tel" id="spousePhone">
-            </div>
-            <label>צילום ת.ז:</label><input type="file" id="idUpload" onchange="previewFile(this)">
-            <img id="idPreview" class="hidden" style="max-width:100%; margin-top:20px; border-radius: 20px;">
-            <button class="save-btn" onclick="saveAllData()">שמור פרטים</button>
-        </div>
-
-        <div id="statusPage" class="container hidden">
-            <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
-            <div style="background:var(--primary); padding:30px; border-radius:25px; color:white; margin-bottom:30px;">
-                <h3 style="margin:0;">🏦 הוספת תמהיל בנקאי</h3>
-                <div style="display:flex; gap:15px; margin-top:15px;">
-                    <select id="bankSelector" style="flex:2; margin:0;"><option value="">בחר בנק...</option><option value="לאומי">לאומי</option><option value="מזרחי טפחות">מזרחי טפחות</option><option value="הפועלים">הפועלים</option><option value="דיסקונט">דיסקונט</option><option value="הבינלאומי">הבינלאומי</option><option value="ירושלים">ירושלים</option><option value="חוץ בנקאי">חוץ בנקאי</option></select>
-                    <button onclick="addBankToCase()" style="background:white; color:var(--primary); border:none; padding:10px 25px; border-radius:15px; font-weight:bold; cursor:pointer;">+ הוסף בנק</button>
+        <!-- עורך לקוח -->
+        <section id="editor" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <button class="btn" style="background: #f1f5f9; color: #64748b;" onclick="goBack()">→ חזרה</button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2 id="edit-title" style="margin:0; font-weight:900;"></h2>
+                    <button class="btn" onclick="renameCustomer()" style="background:none; border:none; cursor:pointer; font-size:18px;" title="ערוך שם">✏️</button>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="arc-toggle-btn" onclick="toggleArchive()"></button>
+                    <button class="btn btn-primary" onclick="saveAllData()" style="background:var(--success);">💾 שמור שינויים</button>
                 </div>
             </div>
-            <div id="dynamicBankList"></div>
-            <button class="save-btn" onclick="saveAllData()">שמור את כל הבנקים</button>
-        </div>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+                <div class="glass-card">
+                    <label>נציג מטפל:</label>
+                    <select id="c-agent"><option value="דורון">דורון</option><option value="יעקב">יעקב</option><option value="אביב">אביב</option></select>
+                    
+                    <label>טלפון:</label><input type="tel" id="c-phone">
 
-        <div id="extraPage" class="container hidden">
-            <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
-            <label>נציג מטפל:</label><select id="assignedAgent"><option value="">בחר נציג...</option><option value="דורון">דורון</option><option value="יעקב">יעקב</option><option value="אביב">אביב</option></select>
-            <label>מטרת התיק:</label><select id="caseGoal"><option value="">בחר...</option><option value="יד ראשונה">יד ראשונה</option><option value="יד שנייה">יד שנייה</option><option value="כל מטרה">כל מטרה</option></select>
-            <label>תמחור התיק:</label><input type="number" id="casePricing">
-            <label>תאריך חזרה:</label><input type="date" id="followUpDate">
-            <label>הערות:</label><textarea id="freeText" rows="6"></textarea>
-            <button class="save-btn" onclick="saveAllData()">שמור שונות</button>
-        </div>
+                    <label>בנק לניהול עו"ש:</label>
+                    <select id="c-bank-main">
+                        <option value="">-- בחר בנק --</option>
+                        <option value="לאומי">לאומי</option><option value="הפועלים">הפועלים</option><option value="מזרחי טפחות">מזרחי טפחות</option>
+                        <option value="דיסקונט">דיסקונט</option><option value="הבינלאומי">הבינלאומי</option><option value="יהב">יהב</option><option value="מרכנתיל">מרכנתיל</option><option value="וואן זירו">One Zero</option>
+                    </select>
 
-        <div id="checklistPage" class="container hidden">
-            <button class="back-btn" onclick="showPage('customerMenuPage')">→ חזרה</button>
-            <h2>✅ צ'ק ליסט</h2>
-            <label>הכנסה:</label><select id="check-income"><option value="לא">❌ חסר</option><option value="כן">✅ יש</option></select>
-            <label>עובר ושב:</label><select id="check-bank"><option value="לא">❌ חסר</option><option value="כן">✅ יש</option></select>
-            <label>חוזה:</label><select id="check-contract"><option value="לא">❌ חסר</option><option value="כן">✅ יש</option></select>
-            <button class="save-btn" onclick="saveAllData()">שמור צ'ק ליסט</button>
-        </div>
-    </div>
+                    <label>קישור לבן/בת זוג:</label>
+                    <select id="c-partner"><option value="">ללא קישור</option></select>
+                    
+                    <label>מטרה:</label>
+                    <select id="c-goal">
+                        <option value="רכישה יד ראשונה">רכישה יד ראשונה</option><option value="רכישה יד שנייה">רכישה יד שנייה</option><option value="מחזור פנימי">מחזור פנימי</option><option value="מחזור חיצוני">מחזור חיצוני</option><option value="כל מטרה">כל מטרה</option>
+                    </select>
 
-    <div class="todo-section">
-        <div style="font-weight: 900; margin-bottom: 15px;">📌 משימות גלובליות</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-            <input type="text" id="todoInput" placeholder="משימה חדשה..." style="margin:0; flex:1; padding: 12px; border-radius: 12px;">
-            <button onclick="addTodo()" style="background:var(--primary); color:white; border:none; padding:0 15px; border-radius:12px; cursor:pointer;">+</button>
-        </div>
-        <div id="todoList"></div>
-    </div>
+                    <label>תאריך חזרה:</label><input type="date" id="c-follow">
+                    <label>הערות:</label><textarea id="c-notes" rows="4"></textarea>
+                    <input type="hidden" id="c-source"><input type="hidden" id="c-price">
+                </div>
 
+                <div class="glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h4 style="margin:0;">🏦 תמהילים והצעות</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="bank-select" style="width: auto; margin:0;"><option value="לאומי">לאומי</option><option value="טפחות">טפחות</option><option value="פועלים">פועלים</option><option value="דיסקונט">דיסקונט</option><option value="בינלאומי">בינלאומי</option></select>
+                            <button class="btn btn-primary" onclick="addBank()">+ בנק</button>
+                        </div>
+                    </div>
+                    <div id="banks-container"></div>
+                </div>
+            </div>
+        </section>
+    </main>
 <script>
-let currentCustomer = "";
-let currentFilter = "all", currentAgentFilter = "all";
-let allCustomers = JSON.parse(localStorage.getItem('crm_customer_list')) || [];
-let todos = JSON.parse(localStorage.getItem('crm_todos')) || [];
+let currentCust = "";
+let allCusts = JSON.parse(localStorage.getItem('dom_crm_list')) || [];
+let todos = JSON.parse(localStorage.getItem('dom_todos')) || [];
+let currentFilter = 'all';
+let previousPage = 'dash';
 
-// נוסחת שפיצר לשימוש כללי
+// ניווט בין עמודים
+function showSection(id) {
+    if (id !== 'editor') previousPage = id;
+    document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+    if(id === 'dash') document.getElementById('btn-nav-dash').classList.add('active');
+    if(id === 'full-list') document.getElementById('btn-nav-list').classList.add('active');
+    renderGrids();
+}
+
+function goBack() { showSection(previousPage); }
+
+// מחשבון שפיצר
 function calculateSpitzer(p, annualRate, years) {
     if (!p || !annualRate || !years || p <= 0 || annualRate <= 0 || years <= 0) return 0;
     const r = (annualRate / 100) / 12;
@@ -204,293 +206,309 @@ function calculateSpitzer(p, annualRate, years) {
     return p * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 }
 
-function quickCalc() {
-    const p = parseFloat(document.getElementById('calcAmt').value);
-    const rate = parseFloat(document.getElementById('calcRate').value);
-    const years = parseFloat(document.getElementById('calcYears').value);
-    const res = calculateSpitzer(p, rate, years);
-    document.getElementById('monthlyResult').innerText = "₪ " + Math.round(res).toLocaleString();
+function sideCalc() {
+    const p = parseFloat(document.getElementById('side-amt').value);
+    const r = parseFloat(document.getElementById('side-rate').value);
+    const y = parseFloat(document.getElementById('side-years').value);
+    const res = calculateSpitzer(p, r, y);
+    document.getElementById('side-res').innerText = "₪ " + Math.round(res).toLocaleString();
 }
 
-function showPage(p) {
-    document.querySelectorAll('.main-content .container').forEach(div => div.classList.add('hidden'));
-    const target = document.getElementById(p);
-    if (target) target.classList.remove('hidden');
-    if (p === 'homePage') { renderCustomerList(); renderTodos(); checkReminders(); }
-    if (p === 'customerMenuPage') updateArchiveBtnUI();
-    if (p === 'statusPage') loadDynamicBanks();
-    if (['idPage', 'extraPage', 'checklistPage'].includes(p)) loadCustomerData();
-    window.scrollTo(0,0);
+// עריכת שם לקוח (עדכון גלובלי)
+function renameCustomer() {
+    const newName = prompt("הכנס שם חדש ללקוח:", currentCust);
+    if (!newName || newName === currentCust) return;
+    if (allCusts.includes(newName)) { alert("השם כבר קיים במערכת"); return; }
+
+    const data = localStorage.getItem('dom_data_' + currentCust);
+    localStorage.setItem('dom_data_' + newName, data);
+    localStorage.removeItem('dom_data_' + currentCust);
+
+    const index = allCusts.indexOf(currentCust);
+    allCusts[index] = newName;
+    localStorage.setItem('dom_crm_list', JSON.stringify(allCusts));
+
+    // עדכון קישורי בני זוג
+    allCusts.forEach(n => {
+        let d = JSON.parse(localStorage.getItem('dom_data_' + n));
+        if (d && d.partner === currentCust) {
+            d.partner = newName;
+            localStorage.setItem('dom_data_' + n, JSON.stringify(d));
+        }
+    });
+
+    currentCust = newName;
+    document.getElementById('edit-title').innerText = "תיק לקוח: " + newName;
+    renderGrids();
 }
 
-function checkReminders() {
-    const bar = document.getElementById('reminderBar');
-    const list = document.getElementById('reminderList');
+// פתיחת תיק לקוח
+function openCustomer(name) {
+    currentCust = name;
+    document.getElementById('edit-title').innerText = "תיק לקוח: " + name;
+    const d = JSON.parse(localStorage.getItem('dom_data_' + name)) || {};
+    
+    document.getElementById('c-agent').value = d.agent || "דורון";
+    document.getElementById('c-phone').value = d.phone || "";
+    document.getElementById('c-bank-main').value = d.bankMain || "";
+    document.getElementById('c-goal').value = d.goal || "רכישה יד ראשונה";
+    document.getElementById('c-follow').value = d.follow || "";
+    document.getElementById('c-notes').value = d.notes || "";
+    
+    // רשימת בני זוג
+    const pSel = document.getElementById('c-partner');
+    pSel.innerHTML = '<option value="">ללא קישור</option>';
+    allCusts.forEach(c => {
+        if(c !== name) {
+            const opt = document.createElement('option');
+            opt.value = c; opt.innerText = c;
+            if(d.partner === c) opt.selected = true;
+            pSel.appendChild(opt);
+        }
+    });
+
+    document.getElementById('banks-container').innerHTML = "";
+    if(d.banks) d.banks.forEach(b => addBank(b.name, b.status, b.tracks));
+    
+    const arcBtn = document.getElementById('arc-toggle-btn');
+    arcBtn.innerText = d.isArchived ? "📂 החזר מארכיון" : "📁 העבר לארכיון";
+    arcBtn.style.background = d.isArchived ? "var(--success)" : "#94a3b8";
+    arcBtn.style.color = "white";
+    showSection('editor');
+}
+
+// רינדור גריד וניהול תזכורות לחיצות
+function renderGrids() {
+    const dashGrid = document.getElementById('dash-grid'), fullGrid = document.getElementById('full-grid');
+    const alertBar = document.getElementById('reminder-alert');
+    if(!dashGrid) return;
+    dashGrid.innerHTML = ""; fullGrid.innerHTML = "";
+    
+    let stats = { all: 0, app: 0, proc: 0, lead: 0, arc: 0 };
+    let reminders = [];
     const today = new Date().toISOString().split('T')[0];
-    list.innerHTML = '';
-    let count = 0;
-    allCustomers.forEach(name => {
-        const d = JSON.parse(localStorage.getItem('crm_data_' + name)) || {};
-        if (d.followUpDate && d.followUpDate <= today && !d.isArchived) {
-            count++;
-            const item = document.createElement('div');
-            item.className = 'notification-item';
-            item.innerHTML = `<span>⚠️ חזרה ל${name}</span><button onclick="openCustomer('${name}')" style="background:#ef476f; color:white; border:none; padding:4px 12px; border-radius:10px; cursor:pointer;">תיק</button>`;
-            list.appendChild(item);
-        }
-    });
-    bar.classList.toggle('hidden', count === 0);
-}
 
-function setFilter(f) { currentFilter = f; renderCustomerList(); }
-function setAgentFilter(a) { currentAgentFilter = a; renderCustomerList(); }
+    const agentF = document.getElementById('filter-agent').value, 
+          searchDash = document.getElementById('search-dash').value.toLowerCase(), 
+          searchFull = document.getElementById('search-full').value.toLowerCase();
 
-function renderCustomerList() {
-    const list = document.getElementById('customerList');
-    list.innerHTML = '';
-    let stats = { approved: 0, followup: 0, leads: 0, archive: 0, totalActive: 0 };
+    allCusts.forEach(name => {
+        const d = JSON.parse(localStorage.getItem('dom_data_' + name)) || {};
+        const isApproved = (d.banks || []).some(b => b.status === 'אושר');
+        const hasBanks = (d.banks || []).length > 0;
+        const isProcess = hasBanks && !isApproved;
+        const isLead = !hasBanks && !d.isArchived;
 
-    allCustomers.forEach(name => {
-        const data = JSON.parse(localStorage.getItem('crm_data_' + name)) || { bankData: [] };
-        let isApp = (data.bankData || []).some(b => b.status === "אושר");
-        let hasAct = (data.bankData || []).length > 0 || data.followUpDate || data.freeText;
-        let cat = isApp ? "approved" : (hasAct ? "followup" : "leads");
+        if (d.follow && d.follow <= today && !d.isArchived) reminders.push(name);
 
-        if (data.isArchived) { stats.archive++; if (currentFilter !== 'archive') return; }
+        if(d.isArchived) stats.arc++;
         else {
-            stats.totalActive++;
-            if (cat === "approved") stats.approved++; else if (cat === "followup") stats.followup++; else stats.leads++;
-            if (currentFilter !== 'all' && currentFilter !== cat) return;
+            stats.all++;
+            if(isApproved) stats.app++; else if(isProcess) stats.proc++; else if(isLead) stats.lead++;
         }
-        if (currentAgentFilter !== 'all' && data.assignedAgent !== currentAgentFilter) return;
 
-        let phoneDigits = data.phone ? data.phone.replace(/\D/g, '') : '';
-        let waLink = phoneDigits ? `https://wa.me{phoneDigits.startsWith('0') ? '972' + phoneDigits.substring(1) : phoneDigits}` : '#';
+        const card = document.createElement('div');
+        card.className = 'cust-card';
+        card.onclick = () => openCustomer(name);
+        const stCls = isApproved ? 'var(--success)' : (isProcess ? 'var(--warning)' : (isLead ? '#6366f1' : '#94a3b8'));
+        
+        card.innerHTML = `<div class="status-pill" style="background:${stCls};">${isApproved?'מאושר':(isProcess?'בטיפול':(isLead?'ליד':'ארכיון'))}</div>
+            <h4 style="margin:0;">${name} ${d.partner ? '<small style="color:var(--primary);">❤️ '+d.partner+'</small>':''}</h4>
+            <div style="font-size:12px; color:#64748b; margin-top:5px;">👤 ${d.agent} | 📞 ${d.phone || '-'}</div>
+            <div style="font-size:11px; color:#94a3b8; margin-top:3px;">🏦 עו"ש: ${d.bankMain || 'לא הוגדר'}</div>
+            ${d.follow ? `<div style="font-size:10px; color:${d.follow <= today ? 'var(--danger)':'#64748b'}; font-weight:bold; margin-top:5px;">📅 חזרה: ${d.follow}</div>`:''}`;
 
-        let div = document.createElement('div');
-        div.className = `customer-card status-${cat} ${data.isArchived ? 'archived' : ''}`;
-        div.onclick = () => openCustomer(name);
-        div.innerHTML = `<div class="avatar">${name.charAt(0)}</div><div class="cust-info-main"><span class="cust-name">${name}</span><span class="cust-phone">${data.phone || ''}</span></div><div class="cust-tags"><span class="tag-pill">👤 ${data.assignedAgent || 'ללא'}</span><span class="tag-pill">🎯 ${data.caseGoal || 'טרם נקבע'}</span></div><div class="cust-actions">${phoneDigits ? `<a href="${waLink}" target="_blank" class="wa-btn" onclick="event.stopPropagation()">🟢 WhatsApp</a>` : ''}<button class="delete-btn" onclick="event.stopPropagation(); deleteCustomer('${name}')">🗑️</button></div>`;
-        list.appendChild(div);
+        if (!searchFull || name.toLowerCase().includes(searchFull)) fullGrid.appendChild(card.cloneNode(true));
+
+        let show = true;
+        if(currentFilter === 'archive' && !d.isArchived) show = false;
+        if(currentFilter !== 'archive' && d.isArchived) show = false;
+        if(currentFilter === 'approved' && !isApproved) show = false;
+        if(currentFilter === 'process' && !isProcess) show = false;
+        if(currentFilter === 'lead' && !isLead) show = false;
+        if(agentF !== 'all' && d.agent !== agentF) show = false;
+        if(searchDash && !name.toLowerCase().includes(searchDash)) show = false;
+        if(show) dashGrid.appendChild(card);
     });
-    document.getElementById('stat-total').innerText = stats.totalActive;
-    document.getElementById('stat-approved').innerText = stats.approved;
-    document.getElementById('stat-followup').innerText = stats.followup;
-    document.getElementById('stat-leads').innerText = stats.leads;
-    document.getElementById('stat-archive').innerText = stats.archive;
+
+    // עדכון סטטיסטיקה ופס תזכורת
+    document.getElementById('stat-all').innerText = stats.all;
+    document.getElementById('stat-app').innerText = stats.app;
+    document.getElementById('stat-proc').innerText = stats.proc;
+    document.getElementById('stat-lead').innerText = stats.lead;
+    document.getElementById('stat-arc').innerText = stats.arc;
+
+    if (reminders.length > 0) {
+        alertBar.classList.remove('hidden');
+        alertBar.innerHTML = `<span>🔔 תזכורת חזרה: </span>` + 
+            reminders.map(n => `<span class="clickable" onclick="event.stopPropagation(); openCustomer('${n}')">${n}</span>`).join(', ');
+    } else { alertBar.classList.add('hidden'); }
 }
 
-function addBankToCase(bankName = null, bankStatus = "ממתין", tracks = []) {
-    const name = bankName || document.getElementById('bankSelector').value;
-    if (!name) return;
-    const container = document.getElementById('dynamicBankList');
-    const bankId = 'b' + Date.now() + Math.random().toString(36).substr(2, 5);
+// ניהול בנקים ומסלולים
+function addBank(bName = null, bStatus = "ממתין", tracks = []) {
+    const name = bName || document.getElementById('bank-select').value;
+    const bId = 'b_' + Math.random().toString(36).substr(2, 5);
     const div = document.createElement('div');
-    div.className = 'bank-card'; div.id = bankId; div.dataset.bankName = name;
+    div.className = 'bank-item'; div.id = bId; div.dataset.bankName = name;
     div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h4>🏦 ${name}</h4>
-            <div style="display:flex; gap:10px;">
-                <button class="download-btn" onclick="downloadBankAsImage('${bankId}')">📸 הורד תמונה</button>
-                <select class="bank-status" style="width:auto; margin:0;"><option value="ממתין" ${bankStatus==="ממתין"?'selected':''}>ממתין</option><option value="אושר" ${bankStatus==="אושר"?'selected':''}>אושר</option></select>
-                <button onclick="this.parentElement.parentElement.remove(); calcTotals();" style="color:red; border:none; background:none; cursor:pointer;">מחק</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+            <strong style="color:var(--primary);">🏦 ${name}</strong>
+            <div style="display:flex; gap:8px;">
+                <button class="btn" style="padding:4px 10px; font-size:11px; background:var(--primary); color:white;" onclick="downloadBankImage('${bId}')">📸</button>
+                <select class="b-stat" style="width:90px; padding:4px; margin:0;"><option value="ממתין" ${bStatus==='ממתין'?'selected':''}>ממתין</option><option value="אושר" ${bStatus==='אושר'?'selected':''}>אושר</option></select>
+                <button onclick="document.getElementById('${bId}').remove()" style="border:none; background:none; color:var(--danger); cursor:pointer;">🗑️</button>
             </div>
         </div>
         <div class="tracks-area"></div>
-        <button onclick="addTrackRow('${bankId}')" style="width:100%; border:none; padding:10px; border-radius:10px; cursor:pointer; background:#edf2f7;">+ הוסף מסלול</button>
-        <div style="margin-top:15px; display:flex; justify-content:space-between; padding-top:10px; border-top:2px solid #eee;">
-            <div>סה"כ הלוואה: <span class="bank-total" style="font-weight:900; color:var(--primary);">0</span> ₪</div>
-            <div>החזר חודשי כולל: <span class="bank-monthly-total" style="font-weight:900; color:var(--danger);">0</span> ₪</div>
-        </div>`;
-    container.appendChild(div);
-    if(tracks.length > 0) tracks.forEach(t => addTrackRow(bankId, t)); else addTrackRow(bankId);
-    calcTotals();
+        <div class="bank-summary-line" style="margin-top:15px; font-size:13px; text-align:left;"></div>
+        <button class="btn" style="width:100%; margin-top:10px; font-size:11px; background:#e2e8f0;" onclick="addTrack('${bId}')">+ הוסף מסלול</button>`;
+    document.getElementById('banks-container').appendChild(div);
+    if(tracks.length > 0) tracks.forEach(t => addTrack(bId, t)); else addTrack(bId);
 }
 
-function addTrackRow(bankId, trackData = {type:'', amt:'', rate:'', years:''}) {
-    const area = document.querySelector(`#${bankId} .tracks-area`);
-    const row = document.createElement('div'); 
-    row.className = 'track-item';
-    const types = ["קבועה צמודה", "קבועה לא צמודה", "משתנה צמודה", "משתנה לא צמודה", "פריים"];
-    
-    row.innerHTML = `
-        <div style="flex:2;"><span class="track-res-label">מסלול</span><select class="t-type">${types.map(t=>`<option value="${t}" ${trackData.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
-        <div style="flex:1.5;"><span class="track-res-label">סכום</span><input type="number" class="t-amt" value="${trackData.amt}" oninput="calcTotals()"></div>
-        <div style="flex:0.8;"><span class="track-res-label">ריבית</span><input type="number" step="0.01" class="t-rate" value="${trackData.rate}" oninput="calcTotals()"></div>
-        <div style="flex:0.8;"><span class="track-res-label">שנים</span><input type="number" class="t-years" value="${trackData.years || 30}" oninput="calcTotals()"></div>
-        <div style="flex:1.2; text-align:center;"><span class="track-res-label">החזר חודשי</span><div class="t-monthly track-res-val">0</div></div>
-        <button onclick="this.parentElement.remove(); calcTotals();" style="border:none; background:none; cursor:pointer; color:#ccc;">✕</button>`;
-    area.appendChild(row); 
-    calcTotals();
+function addTrack(bId, t = {type:'קבועה לא צמודה', amt:'', rate:'', years:30}) {
+    const area = document.querySelector(`#${bId} .tracks-area`);
+    const row = document.createElement('div');
+    row.className = 'track-row';
+    const types = ["קבועה לא צמודה", "קבועה צמודה", "משתנה כל 5 ל\"צ", "משתנה כל 5 צמודה", "פריים", "זכאות", "גישור"];
+    row.innerHTML = `<select class="t-type">${types.map(type => `<option value="${type}" ${t.type===type?'selected':''}>${type}</option>`).join('')}</select>
+        <input type="number" class="t-amt" value="${t.amt}" placeholder="סכום" oninput="updateBankTotals('${bId}')">
+        <input type="number" class="t-rate" step="0.1" value="${t.rate}" placeholder="%" oninput="updateBankTotals('${bId}')">
+        <input type="number" class="t-years" value="${t.years}" placeholder="שנים" oninput="updateBankTotals('${bId}')">
+        <button onclick="this.parentElement.remove(); updateBankTotals('${bId}')" style="border:none; background:none;">❌</button>`;
+    area.appendChild(row);
+    updateBankTotals(bId);
 }
 
-function calcTotals() {
-    document.querySelectorAll('.bank-card').forEach(card => {
-        let totalAmt = 0;
-        let totalMonthly = 0;
-        card.querySelectorAll('.track-item').forEach(row => {
-            const p = parseFloat(row.querySelector('.t-amt').value) || 0;
-            const r = parseFloat(row.querySelector('.t-rate').value) || 0;
-            const y = parseFloat(row.querySelector('.t-years').value) || 0;
-            const m = calculateSpitzer(p, r, y);
-            
-            row.querySelector('.t-monthly').innerText = Math.round(m).toLocaleString();
-            totalAmt += p;
-            totalMonthly += m;
-        });
-        card.querySelector('.bank-total').innerText = Math.round(totalAmt).toLocaleString();
-        card.querySelector('.bank-monthly-total').innerText = Math.round(totalMonthly).toLocaleString();
+function updateBankTotals(bId) {
+    const b = document.getElementById(bId);
+    let totalAmt = 0, totalMonthly = 0;
+    b.querySelectorAll('.track-row').forEach(tr => {
+        const amt = parseFloat(tr.querySelector('.t-amt').value) || 0;
+        const rate = parseFloat(tr.querySelector('.t-rate').value) || 0;
+        const years = parseFloat(tr.querySelector('.t-years').value) || 0;
+        totalAmt += amt; totalMonthly += calculateSpitzer(amt, rate, years);
     });
+    b.querySelector('.bank-summary-line').innerText = `סכום: ${Math.round(totalAmt).toLocaleString()} | החזר: ${Math.round(totalMonthly).toLocaleString()} ₪`;
 }
 
-function downloadBankAsImage(bankId) {
-    const bankCard = document.getElementById(bankId);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const tracks = bankCard.querySelectorAll('.track-item');
+// הורדת תמונה (Canvas)
+function downloadBankImage(bId) {
+    const b = document.getElementById(bId);
+    const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d'), trs = b.querySelectorAll('.track-row');
+    const agent = document.getElementById('c-agent').value;
+    let details = agent === "דורון" ? "דורון שטרית - 0504211784" : (agent === "יעקב" ? "יעקב מנשה - 0523179777" : "אביב פבל - 0507696147");
+
+    canvas.width = 650; canvas.height = 450 + (trs.length * 60);
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#4361ee"; ctx.lineWidth = 14; ctx.strokeRect(0,0,650,canvas.height);
+    ctx.direction = "rtl"; ctx.textAlign = "right"; ctx.fillStyle = "#1e293b";
     
-    canvas.width = 650;
-    canvas.height = 350 + (tracks.length * 60);
-
-    // עיצוב רקע
-    let grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    grd.addColorStop(0, "#ffffff"); grd.addColorStop(1, "#f8fafc");
-    ctx.fillStyle = grd; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#4361ee"; ctx.lineWidth = 14; ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-    ctx.direction = "rtl"; ctx.textAlign = "right"; 
-    ctx.fillStyle = "#1e293b"; ctx.font = "bold 34px sans-serif";
-    ctx.fillText("🏦 תמהיל מאושר: " + bankCard.dataset.bankName, 610, 70);
-    ctx.font = "16px sans-serif"; ctx.fillStyle = "#64748b";
-    ctx.fillText("הצעה עבור: " + currentCustomer + " | תאריך: " + new Date().toLocaleDateString('he-IL'), 610, 105);
-
+    ctx.font = "bold 32px sans-serif"; ctx.fillText("🏦 הצעת תמהיל: " + b.dataset.bankName, 610, 70);
+    ctx.font = "18px sans-serif"; ctx.fillText("שם הלקוח: " + currentCust, 610, 105);
+    
     let y = 160;
-    // כותרות טבלה בתמונה
-    ctx.fillStyle = "#4361ee"; ctx.font = "bold 16px sans-serif";
-    ctx.fillText("מסלול", 610, y - 25);
-    ctx.fillText("סכום הלוואה", 420, y - 25);
-    ctx.fillText("שנים", 290, y - 25);
-    ctx.fillText("ריבית", 210, y - 25);
-    ctx.fillText("החזר חודשי", 110, y - 25);
+    ctx.font = "bold 14px sans-serif"; ctx.fillStyle = "#64748b";
+    ctx.fillText("מסלול", 600, y-20); ctx.fillText("סכום", 400, y-20); ctx.fillText("ריבית", 310, y-20); ctx.fillText("שנים", 250, y-20); ctx.fillText("החזר חודשי", 150, y-20);
 
-    tracks.forEach(tr => {
-        ctx.fillStyle = "#ffffff"; ctx.fillRect(30, y - 15, 590, 45); // שורה לבנה
-        ctx.fillStyle = "#1e293b"; ctx.font = "17px sans-serif";
-        const type = tr.querySelector('.t-type').value;
-        const amt = parseFloat(tr.querySelector('.t-amt').value || 0).toLocaleString() + " ₪";
-        const years = tr.querySelector('.t-years').value;
-        const rate = tr.querySelector('.t-rate').value + "%";
-        const monthly = tr.querySelector('.t-monthly').innerText + " ₪";
-
-        ctx.fillText(type, 610, y + 15);
-        ctx.fillText(amt, 420, y + 15);
-        ctx.fillText(years, 290, y + 15);
-        ctx.fillText(rate, 210, y + 15);
-        ctx.font = "bold 17px sans-serif"; ctx.fillText(monthly, 110, y + 15);
-        y += 55;
+    let totalA = 0, totalM = 0;
+    trs.forEach(tr => {
+        ctx.fillStyle = "#f1f5f9"; ctx.fillRect(30, y-25, 590, 45);
+        ctx.fillStyle = "#1e293b"; ctx.font = "15px sans-serif";
+        const amt = parseFloat(tr.querySelector('.t-amt').value) || 0, rate = tr.querySelector('.t-rate').value, years = tr.querySelector('.t-years').value;
+        const monthly = calculateSpitzer(amt, parseFloat(rate), parseFloat(years));
+        ctx.fillText(tr.querySelector('.t-type').value, 600, y+5);
+        ctx.fillText(Math.round(amt).toLocaleString() + " ₪", 400, y+5);
+        ctx.fillText(rate + "%", 310, y+5); ctx.fillText(years, 250, y+5);
+        ctx.font = "bold 15px sans-serif"; ctx.fillText(Math.round(monthly).toLocaleString() + " ₪", 150, y+5);
+        totalA += amt; totalM += monthly; y += 55;
     });
 
-    // סיכום סופי
-    y += 20;
-    ctx.fillStyle = "#1e293b"; ctx.font = "bold 22px sans-serif";
-    const totalA = bankCard.querySelector('.bank-total').innerText;
-    const totalM = bankCard.querySelector('.bank-monthly-total').innerText;
-    ctx.fillText("סה\"כ סכום: " + totalA + " ₪", 610, y);
-    ctx.fillStyle = "#ef476f"; ctx.fillText("החזר חודשי כולל: " + totalM + " ₪", 610, y + 40);
-
-    // מיתוג
-    ctx.fillStyle = "#1e293b"; ctx.fillRect(7, canvas.height - 90, canvas.width - 14, 83);
+    ctx.fillStyle = "#eff6ff"; ctx.fillRect(30, y-10, 590, 50);
+    ctx.fillStyle = "#4361ee"; ctx.font = "bold 18px sans-serif";
+    ctx.fillText(`סה"כ הלוואה: ${Math.round(totalA).toLocaleString()} ₪ | החזר: ${Math.round(totalM).toLocaleString()} ₪`, 600, y+23);
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(10, canvas.height - 110, 630, 100);
     ctx.textAlign = "center"; ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 22px sans-serif"; ctx.fillText("דורון שטרית - הבית למשכנתא שלך", 325, canvas.height - 50);
-    ctx.font = "16px sans-serif"; ctx.fillStyle = "#94a3b8"; ctx.fillText("📞 050-4211784 | ייעוץ משכנתאות ופתרונות מימון", 325, canvas.height - 25);
+    ctx.font = "bold 22px sans-serif"; ctx.fillText("הבית למשכנתא שלך", 325, canvas.height - 65);
+    ctx.font = "16px sans-serif"; ctx.fillStyle = "#cbd5e1"; ctx.fillText(details, 325, canvas.height - 35);
 
-    const link = document.createElement('a');
-    link.download = `תמהיל_${bankCard.dataset.bankName}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    const l = document.createElement('a'); l.download = `תמהיל_${currentCust}.png`; l.href = canvas.toDataURL(); l.click();
 }
 
+// שמירת נתונים
 function saveAllData() {
-    let ex = JSON.parse(localStorage.getItem('crm_data_' + currentCustomer)) || {};
-    let data = {
-        phone: document.getElementById('custPhone')?.value || "",
-        spouseName: document.getElementById('spouseName')?.value || "",
-        spousePhone: document.getElementById('spousePhone')?.value || "",
-        assignedAgent: document.getElementById('assignedAgent')?.value || "",
-        caseGoal: document.getElementById('caseGoal')?.value || "",
-        casePricing: document.getElementById('casePricing')?.value || "",
-        followUpDate: document.getElementById('followUpDate')?.value || "",
-        freeText: document.getElementById('freeText')?.value || "",
-        isArchived: ex.isArchived || false,
-        checklist: { income: document.getElementById('check-income')?.value || "לא", bank: document.getElementById('check-bank')?.value || "לא", account: document.getElementById('check-account')?.value || "לא", contract: document.getElementById('check-contract')?.value || "לא" },
-        bankData: []
-    };
-    document.querySelectorAll('.bank-card').forEach(row => {
-        let b = { name: row.dataset.bankName, status: row.querySelector('.bank-status').value, tracks: [] };
-        row.querySelectorAll('.track-item').forEach(tr => {
-            b.tracks.push({ 
-                type: tr.querySelector('.t-type').value, 
-                amt: tr.querySelector('.t-amt').value, 
-                rate: tr.querySelector('.t-rate').value,
-                years: tr.querySelector('.t-years').value 
-            });
+    const banks = [];
+    document.querySelectorAll('.bank-item').forEach(b => {
+        const bank = { name: b.dataset.bankName, status: b.querySelector('.b-stat').value, tracks: [] };
+        b.querySelectorAll('.track-row').forEach(tr => {
+            bank.tracks.push({ type: tr.querySelector('.t-type').value, amt: tr.querySelector('.t-amt').value, rate: tr.querySelector('.t-rate').value, years: tr.querySelector('.t-years').value });
         });
-        data.bankData.push(b);
+        banks.push(bank);
     });
-    localStorage.setItem('crm_data_' + currentCustomer, JSON.stringify(data));
-    alert("נשמר בהצלחה!"); showPage('homePage');
+    const d = JSON.parse(localStorage.getItem('dom_data_' + currentCust)) || {};
+    localStorage.setItem('dom_data_' + currentCust, JSON.stringify({
+        agent: document.getElementById('c-agent').value,
+        phone: document.getElementById('c-phone').value,
+        bankMain: document.getElementById('c-bank-main').value,
+        partner: document.getElementById('c-partner').value,
+        goal: document.getElementById('c-goal').value,
+        follow: document.getElementById('c-follow').value, 
+        notes: document.getElementById('c-notes').value,
+        banks: banks, isArchived: d.isArchived || false
+    }));
+    alert("נשמר בהצלחה!");
+    renderGrids();
 }
 
-function loadCustomerData() {
-    const d = JSON.parse(localStorage.getItem('crm_data_' + currentCustomer)) || {};
-    document.getElementById('custPhone').value = d.phone || '';
-    document.getElementById('spouseName').value = d.spouseName || '';
-    document.getElementById('spousePhone').value = d.spousePhone || '';
-    document.getElementById('assignedAgent').value = d.assignedAgent || '';
-    document.getElementById('caseGoal').value = d.caseGoal || '';
-    document.getElementById('casePricing').value = d.casePricing || '';
-    document.getElementById('followUpDate').value = d.followUpDate || '';
-    document.getElementById('freeText').value = d.freeText || '';
-    if(d.checklist) {
-        document.getElementById('check-income').value = d.checklist.income || 'לא';
-        document.getElementById('check-bank').value = d.checklist.bank || 'לא';
-        document.getElementById('check-account').value = d.checklist.account || 'לא';
-        document.getElementById('check-contract').value = d.checklist.contract || 'לא';
-    }
-    const img = document.getElementById('idPreview');
-    if(d.fileData) { img.src = d.fileData; img.classList.remove('hidden'); } else { img.classList.add('hidden'); }
-    toggleSpouseFields();
-}
-
-function loadDynamicBanks() {
-    const list = document.getElementById('dynamicBankList'); list.innerHTML = '';
-    const d = JSON.parse(localStorage.getItem('crm_data_' + currentCustomer)) || {};
-    if(d.bankData) d.bankData.forEach(b => addBankToCase(b.name, b.status, b.tracks));
-}
-
-function exportToExcel() {
-    let csv = "\uFEFFשם,טלפון,נציג,מטרה,ארכיון\n";
-    allCustomers.forEach(name => { const d = JSON.parse(localStorage.getItem('crm_data_' + name)) || {}; csv += [name, d.phone||"", d.assignedAgent||"", d.caseGoal||"", d.isArchived?"כן":"לא"].join(",") + "\n"; });
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.setAttribute("download", "crm_export.csv"); link.click();
-}
-
+// משימות (To-Do)
 function renderTodos() {
-    const list = document.getElementById('todoList'); list.innerHTML = '';
-    todos.forEach((t, i) => { const div = document.createElement('div'); div.className = 'todo-item'; div.innerHTML = `<input type="checkbox" ${t.done?'checked':''} onclick="toggleTodo(${i})"><span class="${t.done?'todo-done':''}">${t.text}</span><button onclick="deleteTodo(${i})" style="border:none; background:none; cursor:pointer; opacity:0.3; margin-right:auto;">✕</button>`; list.appendChild(div); });
+    const list = document.getElementById('todo-list'); list.innerHTML = "";
+    todos.forEach((t, i) => {
+        const div = document.createElement('div'); div.className = 'todo-item';
+        div.innerHTML = `<input type="checkbox" onchange="completeTodo(${i})"> <span>${t.text}</span>`;
+        list.appendChild(div);
+    });
 }
-function addTodo() { const inp = document.getElementById('todoInput'); if(!inp.value.trim()) return; todos.push({text:inp.value, done:false}); localStorage.setItem('crm_todos', JSON.stringify(todos)); inp.value=''; renderTodos(); }
-function toggleTodo(i) { todos[i].done = !todos[i].done; localStorage.setItem('crm_todos', JSON.stringify(todos)); renderTodos(); }
-function deleteTodo(i) { todos.splice(i,1); localStorage.setItem('crm_todos', JSON.stringify(todos)); renderTodos(); }
-function filterNames() { let term = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.customer-card').forEach(card => card.style.display = card.innerText.toLowerCase().includes(term) ? 'flex' : 'none'); }
-function addNewCustomer() { let n = prompt("שם לקוח:"); if (n && !allCustomers.includes(n)) { allCustomers.push(n); localStorage.setItem('crm_customer_list', JSON.stringify(allCustomers)); renderCustomerList(); } }
-function deleteCustomer(n) { if (confirm(`למחוק את ${n}?`)) { allCustomers = allCustomers.filter(c => c !== n); localStorage.removeItem('crm_data_' + n); localStorage.setItem('crm_customer_list', JSON.stringify(allCustomers)); renderCustomerList(); } }
-function toggleArchiveStatus() { let d = JSON.parse(localStorage.getItem('crm_data_' + currentCustomer)) || {}; d.isArchived = !d.isArchived; localStorage.setItem('crm_data_' + currentCustomer, JSON.stringify(d)); showPage('homePage'); }
-function updateArchiveBtnUI() { let d = JSON.parse(localStorage.getItem('crm_data_' + currentCustomer)) || {}; const btn = document.getElementById('archiveBtn'); btn.innerText = d.isArchived ? "📂 החזר" : "📁 ארכיון"; btn.style.background = d.isArchived ? "var(--success)" : "var(--archive)"; }
-function toggleSpouseFields() { const sel = document.getElementById('hasSpouse'); const fields = document.getElementById('spouseFields'); if(sel && fields) fields.classList.toggle('hidden', sel.value === 'no'); }
-function openCustomer(n) { currentCustomer = n; document.getElementById('selectedNameTitle').innerText = n; showPage('customerMenuPage'); }
-function previewFile(input) { const reader = new FileReader(); reader.onload = e => { document.getElementById('idPreview').src = e.target.result; document.getElementById('idPreview').classList.remove('hidden'); }; if(input.files && input.files[0]) reader.readAsDataURL(input.files[0]); }
-window.onload = () => { renderCustomerList(); renderTodos(); checkReminders(); };
+function addTodo() {
+    const inp = document.getElementById('todo-input'); if(!inp.value) return;
+    todos.push({ text: inp.value }); localStorage.setItem('dom_todos', JSON.stringify(todos));
+    inp.value = ""; renderTodos();
+}
+function completeTodo(i) { todos.splice(i, 1); localStorage.setItem('dom_todos', JSON.stringify(todos)); renderTodos(); }
+
+// גיבוי, שחזור ופעולות כלליות
+function setFilter(f) { currentFilter = f; showSection('dash'); }
+function addNewCustomer() {
+    const n = prompt("שם לקוח:");
+    if(n && !allCusts.includes(n)) { allCusts.push(n); localStorage.setItem('dom_crm_list', JSON.stringify(allCusts)); openCustomer(n); }
+}
+function toggleArchive() {
+    const d = JSON.parse(localStorage.getItem('dom_data_' + currentCust)) || {};
+    d.isArchived = !d.isArchived; localStorage.setItem('dom_data_' + currentCust, JSON.stringify(d)); goBack();
+}
+function exportFullBackup() {
+    const backup = { list: allCusts, todos: todos, data: {} };
+    allCusts.forEach(name => { backup.data[name] = JSON.parse(localStorage.getItem('dom_data_' + name)); });
+    const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CRM_Backup.json`; a.click();
+}
+function importFullBackup(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const b = JSON.parse(e.target.result);
+        if(confirm("שחזור ימחק נתונים קיימים. להמשיך?")) {
+            localStorage.setItem('dom_crm_list', JSON.stringify(b.list));
+            localStorage.setItem('dom_todos', JSON.stringify(b.todos));
+            for(let k in b.data) localStorage.setItem('dom_data_'+k, JSON.stringify(b.data[k]));
+            location.reload();
+        }
+    };
+    reader.readAsText(file);
+}
+
+window.onload = () => { renderGrids(); renderTodos(); };
 </script>
 </body>
 </html>
